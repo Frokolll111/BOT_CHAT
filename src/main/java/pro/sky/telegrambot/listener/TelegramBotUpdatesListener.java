@@ -16,6 +16,7 @@ import pro.sky.telegrambot.repository.NotificationTaskRepository;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,15 +51,19 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 String offers = update.message().text();
                 Pattern pattern = Pattern.compile("([0-9.:\\s]{16})(\\s)([\\W+]+)");
                 Matcher matcher = pattern.matcher(offers);
-                if (matcher.matches()) {
-                    LocalDateTime time = LocalDateTime.parse(matcher.group(1),
-                            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-                    String answer = matcher.group(3);
-                    NotificationTask notificationTask = new NotificationTask();
-                    notificationTask.setChatId(update.message().chat().id());
-                    notificationTask.setMessageText(answer);
-                    notificationTask.setLocalDateTime(time);
-                    notificationTaskRepository.save(notificationTask);
+                try {
+                    if (matcher.matches()) {
+                        LocalDateTime time = LocalDateTime.parse(matcher.group(1),
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+                        String answer = matcher.group(3);
+                        NotificationTask notificationTask = new NotificationTask();
+                        notificationTask.setChatId(update.message().chat().id());
+                        notificationTask.setMessageText(answer);
+                        notificationTask.setLocalDateTime(time);
+                        notificationTaskRepository.save(notificationTask);
+                    }
+                } catch (DateTimeParseException e) {
+                    System.out.println("Неправильный формат отправления");
                 }
             }
 
