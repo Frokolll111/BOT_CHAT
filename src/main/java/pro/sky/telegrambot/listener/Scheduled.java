@@ -21,8 +21,9 @@ public class Scheduled {
     }
 
     public List<NotificationTask> runTask() {
-        return notificationTaskRepository.findAllByExecDateLessThan((LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
-
+        return notificationTaskRepository.findAll().stream()
+                .filter(f -> f.getLocalDateTime().equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+                .collect(Collectors.toList());
     }
 
  }
