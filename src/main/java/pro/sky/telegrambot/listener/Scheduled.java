@@ -22,6 +22,7 @@ public class Scheduled {
 
     public List<NotificationTask> runTask() {
         return notificationTaskRepository.findAllByExecDateLessThan((LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
+
     }
 
  }
