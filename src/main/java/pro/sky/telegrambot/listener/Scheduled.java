@@ -14,12 +14,14 @@ import java.util.stream.Collectors;
 public class Scheduled {
 
     @Autowired
-    private NotificationTaskRepository notificationTaskRepository;
+    private final NotificationTaskRepository notificationTaskRepository;
+
+    public Scheduled(NotificationTaskRepository notificationTaskRepository) {
+        this.notificationTaskRepository = notificationTaskRepository;
+    }
 
     public List<NotificationTask> runTask() {
-        return notificationTaskRepository.findAll().stream()
-                .filter(f -> f.getLocalDateTime().equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
-                .collect(Collectors.toList());
+        return notificationTaskRepository.findAllByExecDateLessThan((LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)));
     }
 
  }
