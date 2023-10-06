@@ -66,19 +66,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     System.out.println("Неправильный формат отправления");
                 }
             }
-
             // Process your updates here
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    @Scheduled(cron  = "0 0/1 * * * *")
-    public void run() {
-        scheduled.runTask()
-                .forEach(f->{
-                    SendMessage sendMessage = new SendMessage(f.getChatId(), f.getMessageText());
-                    SendResponse sendResponse = telegramBot.execute(sendMessage);
-                });
-    }
 
 }
+

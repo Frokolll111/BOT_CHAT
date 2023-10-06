@@ -7,5 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NotificationTaskRepository extends JpaRepository<NotificationTask,Long>{
-    List<NotificationTask> findAllByExecDateLessThan(LocalDateTime timePoint);
+
+    List<NotificationTask> findAllByLocalDateTimeLessThan(LocalDateTime timePoint);
 }

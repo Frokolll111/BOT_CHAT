@@ -1,29 +1,36 @@
 package pro.sky.telegrambot.listener;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Component;
 import pro.sky.telegrambot.model.NotificationTask;
 import pro.sky.telegrambot.repository.NotificationTaskRepository;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Component
 public class Scheduled {
-
     @Autowired
-    private final NotificationTaskRepository notificationTaskRepository;
+    private NotificationTaskRepository notificationTaskRepository;
+    @Autowired
+    private TelegramBot bot;
 
-    public Scheduled(NotificationTaskRepository notificationTaskRepository) {
-        this.notificationTaskRepository = notificationTaskRepository;
+    @org.springframework.scheduling.annotation.Scheduled(cron = "0 0/1 * * * *")
+    public void runTask() {
+
+        List<NotificationTask> tasks = notificationTaskRepository.findAllByLocalDateTimeLessThan(LocalDateTime.now());
+
+        for (NotificationTask task : tasks) {
+            bot.execute(new SendMessage(task.getChatId(), task.getLocalDateTime() + ": " + task.getMessageText()));
+        }
+
+        //     return  notificationTaskRepository.findAll().stream()
+        //              .filter(f->f.getLocalDateTime().equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
+        //             .collect(Collectors.toList());
     }
-
-    public List<NotificationTask> runTask() {
-        return notificationTaskRepository.findAll().stream()
-                .filter(f -> f.getLocalDateTime().equals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES)))
-                .collect(Collectors.toList());
-    }
-
- }
+}
